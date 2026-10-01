@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mood Pixels
 
-## Getting Started
+Mood Pixels is a small mood tracker that uses TypeSafe AI (JEV) to turn a few words about your day into a mood and self-care nudge. Write a check-in and see your mood reflected in a colourful Year in Pixels calendar.
 
-First, run the development server:
+## What it does
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Classifies a check-in as **Sparkly**, **Cozy**, **Tired**, **Sad**, or **Frustrated** using TypeSafe AI.
+- Shows an energy score from 1 to 5 and a short self-care nudge.
+- Colours the corresponding day in the Year in Pixels calendar. The calendar currently displays **2026**.
+- Keeps one result per date in your browser's `localStorage`. A new check-in on the same day replaces that day's result.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Your check-in text is sent for mood analysis, but it is not saved in browser storage. Your browser saves only the date, mood, energy score, and self-care nudge. There are no accounts, so saved results do not sync across browsers or devices.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Run locally
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+You need **Node.js 20.9 or newer**, npm, and a TypeSafe AI API key.
 
-## Learn More
+1. Install dependencies:
 
-To learn more about Next.js, take a look at the following resources:
+   ```bash
+   npm ci
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. Create the local environment file from the example:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   ```bash
+   cp .env.example .env
+   ```
 
-## Deploy on Vercel
+   Replace `your_api_key_here` in `.env` with your API key. The app reads `TYPESAFE_API_KEY` on the server. The `.env` file is ignored by Git.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3. Start the development server:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   ```bash
+   npm run dev
+   ```
+
+Open [http://localhost:3000](http://localhost:3000), enter a few words about your day, and select **Log Vibe Check**. An API key is required for mood analysis.
+
+
+## Project structure
+
+| Path | Purpose |
+| --- | --- |
+| `src/app/page.tsx` | Main page and saved mood state |
+| `src/app/ui/` | Check-in form, energy display, and Year in Pixels calendar |
+| `src/app/api/jev/route.ts` | Server-side mood analysis endpoint |
+| `src/app/lib/mood-log.ts` | Date and browser storage helpers |
+| `styles/globals.css` | Global styles |
+
+
+## Current limitations
+
+- The Year in Pixels view is fixed to 2026.
+- The calendar shows the colour for a logged day; it does not provide a history or editing screen.
+- Clearing the site's browser storage removes saved results.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
