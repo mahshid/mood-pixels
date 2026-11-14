@@ -1,54 +1,135 @@
 "use client";
-import React, { useMemo, useSyncExternalStore } from "react";
+import { useState } from "react";
 import MoodCheckIn from "./ui/MoodCheckIn";
 import YearInPixelsCard from "./ui/YearInPixelsCard";
-import BrandLogo from "./ui/BrandLogo";
-import {
-    saveMoodLog,
-    getMoodLog,
-    parseMoodLog,
-    subscribeMoodLog,
-} from "./lib/mood-log";
+import { useMoodEntries } from "./hooks/useMoodEntries";
 
-const moodColours: Record<string, { text: string; bg: string }> = {
-    Sparkly: { text: "text-emerald-500", bg: "bg-emerald-500" },
-    Cozy: { text: "text-yellow-400", bg: "bg-yellow-400" },
-    Tired: { text: "text-blue-400", bg: "bg-blue-400" },
-    Sad: { text: "text-purple-400", bg: "bg-purple-400" },
-    Frustrated: { text: "text-red-500", bg: "bg-red-500" },
+const moodColours = {
+    Sparkly: { text: "", bg: "tone-sparkly" },
+    Cozy: { text: "", bg: "tone-cozy" },
+    Tired: { text: "", bg: "tone-tired" },
+    Sad: { text: "", bg: "tone-sad" },
+    Frustrated: { text: "", bg: "tone-frustrated" },
 };
 
 export default function Home() {
-    const savedData = useSyncExternalStore(
-        subscribeMoodLog,
-        getMoodLog,
-        () => null,
-    );
-    const allVibes = useMemo(() => parseMoodLog(savedData), [savedData]);
-    const vibeResult = allVibes[allVibes.length - 1] ?? null;
+    const [page, setPage] = useState("today");
+    const [account, setAccount] = useState(false);
+
+    const { entries, isLoading, error, saveEntry, deleteEntry } = useMoodEntries();
 
     return (
-        <div className="mx-auto flex max-w-5xl mt-10 flex-col gap-6">
-            <BrandLogo colours={moodColours} />
-            <MoodCheckIn
-                vibeResult={vibeResult}
-                moodColours={moodColours}
-                onMoodLogged={saveMoodLog}
-            />
-
-            <YearInPixelsCard allVibes={allVibes} moodColours={moodColours} />
-            <p className="mb-5 text-center text-sm text-gray-400">
-                Created by Mahshid
-                <span className="mx-2">|</span>
+        <main className="mood-app">
+            <header>
+                <div className="brand">
+                    <span className="flex flex-col gap-1" aria-hidden="true">
+                        {[0, 1, 2].map((row) => (
+                            <span key={row} className="flex gap-1">
+                                {[
+                                    "bg-emerald-500",
+                                    "bg-yellow-400",
+                                    "bg-blue-400",
+                                    "bg-purple-400",
+                                    "bg-red-500",
+                                ].map((colour) => (
+                                    <span
+                                        key={colour}
+                                        className={`size-2 rounded-full ${colour}`}
+                                    />
+                                ))}
+                            </span>
+                        ))}
+                    </span>
+                    Mood Pixels
+                </div>
+                <button
+                    type="button"
+                    className="avatar"
+                    aria-label="About your storage"
+                    aria-expanded={account}
+                    aria-controls="account-note"
+                    onClick={() => setAccount(!account)}
+                >
+                    ☺
+                </button>
+            </header>
+            <div
+                id="account-note"
+                hidden={!account}
+                className="card account-note"
+            >
+                <p className="label">Your own little space.</p>
+                <p className="small">
+                    Your check-ins are saved in your local PostgreSQL database.
+                    Accounts and syncing across devices are coming later.
+                </p>
+                <button
+                    type="button"
+                    className="manual-link"
+                    onClick={() => setAccount(false)}
+                >
+                    Close
+                </button>
+            </div>
+            <nav className="nav" aria-label="Main navigation">
+                <button
+                    type="button"
+                    aria-current={page === "today" ? "page" : undefined}
+                    onClick={() => setPage("today")}
+                >
+                    Check in
+                </button>
+                <button
+                    type="button"
+                    aria-current={page === "history" ? "page" : undefined}
+                    onClick={() => setPage("history")}
+                >
+                    My days
+                </button>
+            </nav>
+            {isLoading ? (
+                <p className="small" role="status">
+                    Loading your check-ins…
+                </p>
+            ) : error ? (
+                <div className="card" role="alert">
+                    <p>{error}</p>
+                    <button
+                        type="button"
+                        className="primary"
+                        onClick={() => window.location.reload()}
+                    >
+                        Try again
+                    </button>
+                </div>
+            ) : (
+                <>
+                    <div hidden={page !== "today"}>
+                        <MoodCheckIn
+                            moodColours={moodColours}
+                            onMoodLogged={saveEntry}
+                        />
+                    </div>
+                    <div hidden={page !== "history"}>
+                        <YearInPixelsCard
+                            allVibes={entries}
+                            moodColours={moodColours}
+                            onSave={saveEntry}
+                            onDelete={deleteEntry}
+                        />
+                    </div>
+                </>
+            )}
+            <footer className="foot">
+                Made by Mahshid ·{" "}
                 <a
                     href="https://github.com/mahshid/mood-pixels"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="underline underline-offset-4 transition-colors hover:text-cyan-700"
                 >
                     View source
                 </a>
-            </p>
-        </div>
+            </footer>
+        </main>
     );
 }
