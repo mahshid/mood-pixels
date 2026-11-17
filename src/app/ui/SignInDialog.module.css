@@ -1,0 +1,25 @@
+.dialog {
+	width: min(400px, calc(100vw - 32px));
+	max-height: calc(100dvh - 32px);
+	margin: auto;
+	padding: 26px;
+	border: 1px solid #e0e5d8;
+	border-radius: 24px;
+	background: #fff;
+	color: #33382f;
+	box-shadow: 0 16px 60px #33382f26;
+}
+.dialog::backdrop {
+	background: #33382f66;
+	backdrop-filter: blur(3px);
+}
+.dialog h2 {
+	font-size: 23px;
+}
+.close {
+	display: block;
+	margin: 0 0 12px auto;
+	min-height: 44px;
+	padding: 8px;
+	font-size: 13px;
+}

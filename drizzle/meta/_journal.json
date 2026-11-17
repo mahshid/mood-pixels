@@ -1,13 +1,27 @@
 {
-  "version": "7",
-  "dialect": "postgresql",
-  "entries": [
-    {
-      "idx": 0,
-      "version": "7",
-      "when": 1794514345406,
-      "tag": "0000_create_mood_entries",
-      "breakpoints": true
-    }
-  ]
+	"version": "7",
+	"dialect": "postgresql",
+	"entries": [
+		{
+			"idx": 0,
+			"version": "7",
+			"when": 1794514345406,
+			"tag": "0000_create_mood_entries",
+			"breakpoints": true
+		},
+		{
+			"idx": 1,
+			"version": "7",
+			"when": 1794672117077,
+			"tag": "0001_add_auth_and_entry_ownership",
+			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "7",
+			"when": 1794756343639,
+			"tag": "0002_add_ai_usage_limits",
+			"breakpoints": true
+		}
+	]
 }
